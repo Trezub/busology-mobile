@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { TextInput, View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons, SimpleLineIcons, Fontisto } from '@expo/vector-icons'; 
 import { useNavigation, useRoute } from '@react-navigation/native';
+import MapView, { Polyline } from 'react-native-maps';
 import api from '../../services/api';
 import styles from './styles';
+import utils from '../../utils';
 
 export default function LineDetail() {
     const navigation = useNavigation();
@@ -15,9 +17,15 @@ export default function LineDetail() {
     const [loading, setLoading] = useState(false);
     const [activeTimeTables, setActiveTimeTables] = useState('Carregando...');
 
+
     useEffect(() => {
         loadDynamicData();
     }, [])
+
+
+    function navigateToMap(car) {
+        navigation.navigate('lineMap', {line, activeTimeTables, car, dynamicData});
+    }
 
     async function loadDynamicData() {
         if (loading) return;
@@ -26,34 +34,11 @@ export default function LineDetail() {
         try {
             const response = (await api.get('/dynamic/line/' + line.code)).data;
             setDynamicData(response);
-            setActiveTimeTables(`${response.activeTimeTables} tabelas ativas`)
+            setActiveTimeTables(`${response.activeTimeTables} tabelas ativas`);
         } catch (err) {
             console.log(err);
         }
-
-
-
         setLoading(false);
-    }
-
-    function getLineColorStyle(category) {
-        switch (category) {
-            case 'AL':
-                return styles.orange;
-            case 'TR':
-            case 'CO':
-                return styles.yellow;
-            case 'IN':
-                return styles.green;
-            case 'EX':
-                return styles.red;
-            case 'LG':
-                return styles.blue;
-            case 'LD':
-                return styles.gray;
-            case 'CI':
-                return styles.white;
-        }
     }
 
     return (
@@ -63,8 +48,11 @@ export default function LineDetail() {
                     <TouchableOpacity onPress={navigation.goBack}>
                         <Ionicons name="md-arrow-back" size={24} color="black" style={{marginRight: 15, marginLeft: 5}} />
                     </TouchableOpacity>
-                    <Text style={[styles.lineCode, getLineColorStyle(line.type)]}>{line.code}</Text>
+                    <Text style={[styles.lineCode, utils.getLineColorStyle(line.type)]}>{line.code}</Text>
                     <Text style={styles.lineName}>{line.name}</Text>
+                    <TouchableOpacity onPress={() => navigateToMap()} style={[styles.button, { marginLeft: 'auto' }]}>
+                        <SimpleLineIcons name="map" size={15} color="black" />
+                    </TouchableOpacity>
                 </View>
                 <View>
                     <Text>Implantada em: {line.implantedDate}</Text>
@@ -81,12 +69,19 @@ export default function LineDetail() {
 
                     renderItem={({ item: car }) => (
                         <View style={styles.car}>
-                            <View style={[styles.lineCode, {}]}><Text>{car.prefix}</Text></View>
-                            <Text>Tipo: {car.type.name}</Text>
-                            <Text>Status do carro: {car.status.description}</Text>
-                            <Text>Próxima partida: {car.nextDeparture.name} ({car.nextDeparture.time})</Text>
-                            <Text>Tabela: {car.timeTable.code} - {car.scheduleStatus}</Text>
-                            <Text>Visto por último: {car.lastSeen}</Text>
+                            <View style={[styles.lineCode, { marginBottom: 10 }]}><Text>{car.prefix} - {car.owner}</Text></View>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ marginLeft: 10 }} >
+                                    <Text>Tipo: {car.type.name}</Text>
+                                    <Text>Status do carro: {car.status.description}</Text>
+                                    <Text>Próxima partida: {car.nextDeparture.name} ({car.nextDeparture.time})</Text>
+                                    <Text>Tabela: {car.timeTable.code} ({car.timeTable.owner}) - {car.scheduleStatus}</Text>
+                                    <Text>Visto por último: {car.lastSeen}</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => navigateToMap(car)} style={[styles.button, { marginTop: 'auto', marginLeft: 'auto'}]}>
+                                    <Fontisto icons name="map-marker-alt" size={15} color="black" />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
                 ></FlatList>

@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
 import styles from './styles';
+import utils from '../../utils'
 
 export default function Home() {
     const [lines, setLines] = useState([]);
@@ -20,7 +21,7 @@ export default function Home() {
         try {
             const response = await api.get('/static/lines');
             setLines(response.data.lines);
-            filterLines('');
+            setFilteredLines(response.data.lines);
         } catch (err) {
             console.log(err);
         }
@@ -31,30 +32,10 @@ export default function Home() {
         loadLines();
     }, []);
 
-    function getLineColorStyle(category) {
-        switch (category) {
-            case 'AL':
-                return styles.orange;
-            case 'TR':
-            case 'CO':
-                return styles.yellow;
-            case 'IN':
-                return styles.green;
-            case 'EX':
-                return styles.red;
-            case 'LG':
-                return styles.blue;
-            case 'LD':
-                return styles.gray;
-            case 'CI':
-                return styles.white;
-        }
-    }
-
-    function filterLines(searchTerms) {
-        setSearchTerms(searchTerms);
+    useEffect(() => {
         setFilteredLines(lines.filter(l => l.name.includes(searchTerms.toUpperCase()) ||  l.code.startsWith(searchTerms)));
-    }
+    }, [searchTerms]);
+
 
     function navigateToDetail(line) {
         navigation.navigate('LineDetail', {line});
@@ -64,8 +45,8 @@ export default function Home() {
         <View style={styles.container}>
             <TextInput
                 placeholder='Pesquisar'
+                onChangeText={setSearchTerms}
                 value={searchTerms}
-                onChangeText={filterLines}
                 style={styles.searchBar}
             />
             <FlatList
@@ -76,7 +57,7 @@ export default function Home() {
 
                 renderItem={({ item: line }) => (
                     <TouchableOpacity style={styles.line} onPress={() => navigateToDetail(line)}>
-                        <Text style={[styles.lineCode, getLineColorStyle(line.type)]}>{line.code}</Text>
+                        <Text style={[styles.lineCode, utils.getLineColorStyle(line.type)]}>{line.code}</Text>
                         <Text style={styles.lineName}>{line.name}</Text>
                         <View
                             style={styles.detailButton}

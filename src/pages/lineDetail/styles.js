@@ -11,7 +11,6 @@ export default StyleSheet.create({
         paddingHorizontal: 10,
         paddingTop: 20,
     },
-
     car: {
         marginBottom: 20,
     },
@@ -47,28 +46,10 @@ export default StyleSheet.create({
     property: {
        textTransform: 'capitalize'
     },
-
-    green: {
-        backgroundColor: '#28a745'
-    },
-    yellow: {
-        backgroundColor: '#ffc107',
-        color: '#000',
-    },
-    red: {
-        backgroundColor: '#dc3545'
-    },
-    orange: {
-        backgroundColor: '#ed7900'
-    },
-    blue: {
-        backgroundColor: '#007bff'
-    },
-    gray: {
-        backgroundColor: '#6c757d'
-    },
-    white: {
+    button: {
         backgroundColor: '#eee',
-        color: '#000',
+        paddingVertical: 7,
+        paddingHorizontal: 12,
+        borderRadius: 8,
     }
 });
