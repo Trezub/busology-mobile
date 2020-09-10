@@ -2,7 +2,7 @@
   "expo": {
     "name": "busology",
     "slug": "busology",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -17,7 +17,20 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "config": {
+        "googleMapsApiKey": "AIzaSyBhiqB1O4rHqGro8a7eB5LnYPg5z6Eu6qg"
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "br.com.softiba.busology"
+    },
+    "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBhiqB1O4rHqGro8a7eB5LnYPg5z6Eu6qg"
+        }
+      },
+      "package": "br.com.softiba.busology",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

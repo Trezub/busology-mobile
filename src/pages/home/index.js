@@ -6,13 +6,93 @@ import api from '../../services/api';
 import styles from './styles';
 import utils from '../../utils'
 
+import {
+    Placeholder,
+    PlaceholderMedia,
+    PlaceholderLine,
+    Fade
+} from "rn-placeholder";
+
+
+// notificacoes
+// import Constants from 'expo-constants';
+// import * as Notifications from 'expo-notifications';
+// import * as Permissions from 'expo-permissions';
+
+// Notifications.setNotificationHandler({
+//     handleNotification: async () => ({
+//         shouldShowAlert: true,
+//         shouldPlaySound: false,
+//         shouldSetBadge: false,
+//     }),
+// });
+
 export default function Home() {
     const [lines, setLines] = useState([]);
     const [filteredLines, setFilteredLines] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerms, setSearchTerms] = useState('');
-    
+
     const navigation = useNavigation();
+
+    //notificacoes 
+
+    // const [expoPushToken, setExpoPushToken] = useState('');
+    // const [notification, setNotification] = useState(false);
+    // const notificationListener = useRef();
+    // const responseListener = useRef();
+    // useEffect(() => {
+    //     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    //     // This listener is fired whenever a notification is received while the app is foregrounded
+    //     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+    //         setNotification(notification);
+    //     });
+
+    //     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    //     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    //         console.log(response);
+    //     });
+
+    //     return () => {
+    //         Notifications.removeNotificationSubscription(notificationListener);
+    //         Notifications.removeNotificationSubscription(responseListener);
+    //     };
+    // }, []);
+
+    // async function registerForPushNotificationsAsync() {
+    //     let token;
+    //     if (Constants.isDevice) {
+    //         const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    //         let finalStatus = existingStatus;
+    //         if (existingStatus !== 'granted') {
+    //             const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    //             finalStatus = status;
+    //         }
+    //         if (finalStatus !== 'granted') {
+    //             console.log('Failed to get push token for push notification!');
+    //             return;
+    //         }
+    //         token = (await Notifications.getExpoPushTokenAsync()).data;
+    //         console.log(token);
+    //     } else {
+    //         alert('Must use physical device for Push Notifications');
+    //     }
+
+    //     if (Platform.OS === 'android') {
+    //         Notifications.setNotificationChannelAsync('default', {
+    //             name: 'default',
+    //             importance: Notifications.AndroidImportance.MAX,
+    //             vibrationPattern: [0, 250, 250, 250],
+    //             lightColor: '#FF231F7C',
+    //         });
+    //     }
+
+    //     return token;
+    // }
+
+
+
 
     async function loadLines() {
         if (loading) return;
@@ -20,10 +100,10 @@ export default function Home() {
         setLoading(true);
         try {
             const response = await api.get('/static/lines');
-            setLines(response.data.lines);
-            setFilteredLines(response.data.lines);
+            setLines(response.data);
+            setFilteredLines(response.data);
         } catch (err) {
-            console.log(err);
+            (err);
         }
         setLoading(false);
     }
@@ -33,12 +113,12 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        setFilteredLines(lines.filter(l => l.name.includes(searchTerms.toUpperCase()) ||  l.code.startsWith(searchTerms)));
+        setFilteredLines(lines.filter(l => l.NOME.includes(searchTerms.toUpperCase()) || l.COD.startsWith(searchTerms)));
     }, [searchTerms]);
 
 
     function navigateToDetail(line) {
-        navigation.navigate('LineDetail', {line});
+        navigation.navigate('LineDetail', { line });
     }
 
     return (
@@ -53,12 +133,12 @@ export default function Home() {
                 data={filteredLines}
                 style={styles.list}
                 showsVerticalScrollIndicator={true}
-                keyExtractor={line => String(line.id)}
+                keyExtractor={line => line.COD}
 
                 renderItem={({ item: line }) => (
                     <TouchableOpacity style={styles.line} onPress={() => navigateToDetail(line)}>
-                        <Text style={[styles.lineCode, utils.getLineColorStyle(line.type)]}>{line.code}</Text>
-                        <Text style={styles.lineName}>{line.name}</Text>
+                        <Text style={[styles.lineCode, utils.getLineColorStyle(line.NOME_COR)]}>{line.COD}</Text>
+                        <Text style={styles.lineName}>{line.NOME}</Text>
                         <View
                             style={styles.detailButton}
                         >

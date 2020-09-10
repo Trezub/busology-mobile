@@ -10,6 +10,7 @@ export default StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 10,
         paddingTop: 20,
+        flex: 1,
     },
     car: {
         marginBottom: 20,

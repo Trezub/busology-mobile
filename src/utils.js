@@ -3,20 +3,19 @@ import styles from './styles'
 export default {
     getLineColorStyle(category) {
         switch (category) {
-            case 'AL':
+            case 'LARANJA':
                 return styles.orange;
-            case 'TR':
-            case 'CO':
+            case 'AMARELA':
                 return styles.yellow;
-            case 'IN':
+            case 'VERDE':
                 return styles.green;
-            case 'EX':
+            case 'VERMELHA':
                 return styles.red;
-            case 'LG':
+            case 'AZUL':
                 return styles.blue;
-            case 'LD':
+            case 'PRATA':
                 return styles.gray;
-            case 'CI':
+            case 'BRANCA':
                 return styles.white;
         }
     }

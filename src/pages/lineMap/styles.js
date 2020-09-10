@@ -7,8 +7,10 @@ export default StyleSheet.create({
     },
     staticWrapper: {
         backgroundColor: '#fff',
-        paddingBottom: 13, 
-        paddingTop: Constants.statusBarHeight + 10,
+        paddingVertical: 10,
+        marginTop: Constants.statusBarHeight + 10,
+        marginHorizontal: 15,
+        borderRadius: 20,
         paddingHorizontal: 20,
     },
     line: {
@@ -18,7 +20,16 @@ export default StyleSheet.create({
         marginTop: 5,
         marginBottom: 10,
     },
-
+    car: {
+        padding: 20,
+        borderRadius: 15,
+        backgroundColor: '#fff'
+    },
+    carousel: {
+        position: 'absolute',
+        bottom: 0,
+        height: 120,
+    },
     lineCode: {
         fontSize: 13,
         backgroundColor: '#eee',
