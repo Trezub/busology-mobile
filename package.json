@@ -8,8 +8,9 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@expo/vector-icons": "^10.2.1",
+    "@expo/vector-icons": "^10.0.0",
     "@react-native-community/masked-view": "0.1.10",
+    "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.7.3",
     "@react-navigation/stack": "^5.9.0",
     "axios": "^0.19.2",
@@ -17,17 +18,18 @@
     "expo-status-bar": "^1.0.2",
     "lodash.groupby": "^4.6.0",
     "lodash.merge": "^4.6.2",
+    "lodash.orderby": "^4.6.0",
+    "moment": "^2.27.0",
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
     "react-native-gesture-handler": "~1.6.0",
-    "react-native-maps": "0.27.1",
+    "react-native-maps": "^0.27.1",
     "react-native-reanimated": "~1.9.0",
     "react-native-safe-area-context": "~3.0.7",
     "react-native-screens": "~2.9.0",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-web": "~0.11.7",
-    "rn-placeholder": "^3.0.1",
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {

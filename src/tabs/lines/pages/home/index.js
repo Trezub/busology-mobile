@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useReducer } from 'react'
 import { TextInput, View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import api from '../../services/api';
+import api from '../../../../services/api';
 import styles from './styles';
-import utils from '../../utils'
+import utils from '../../../../utils'
 
-import {
-    Placeholder,
-    PlaceholderMedia,
-    PlaceholderLine,
-    Fade
-} from "rn-placeholder";
+// import {
+//     Placeholder,
+//     PlaceholderMedia,
+//     PlaceholderLine,
+//     Fade
+// } from "rn-placeholder";
 
 
 // notificacoes
@@ -34,6 +34,7 @@ export default function Home() {
     const [searchTerms, setSearchTerms] = useState('');
 
     const navigation = useNavigation();
+
 
     //notificacoes 
 
@@ -123,12 +124,19 @@ export default function Home() {
 
     return (
         <View style={styles.container}>
-            <TextInput
-                placeholder='Pesquisar'
-                onChangeText={setSearchTerms}
-                value={searchTerms}
-                style={styles.searchBar}
-            />
+            <View style={styles.searchBar}>
+                <TextInput
+                    placeholder='Pesquisar'
+                    onChangeText={setSearchTerms}
+                    value={searchTerms}
+                />
+                <TouchableOpacity
+                    onPress={() => setSearchTerms('')}
+                    style={{ marginLeft: 'auto', justifyContent: 'center', display: searchTerms !== '' ? 'flex' : 'none' }}
+                >
+                    <MaterialIcons name="clear" size={15} color="#2d3436" />
+                </TouchableOpacity>
+            </View>
             <FlatList
                 data={filteredLines}
                 style={styles.list}

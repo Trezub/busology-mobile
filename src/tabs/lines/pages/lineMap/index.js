@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, Dimensions } from 'react-native';
 import MapView, { Polyline, Callout, Marker } from 'react-native-maps';
 import { useRoute, useNavigation } from '@react-navigation/native'
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import carTypes from '../../services/vehicleTypes';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import carTypes from '../../../../services/vehicleTypes';
 import Carousel from 'react-native-snap-carousel';
 import merge from 'lodash.merge';
+import moment from 'moment';
 import groupBy from 'lodash.groupby';
 import io from 'socket.io-client';
-import api from '../../services/api';
+import api from '../../../../services/api';
 import styles from './styles';
-import utils from '../../utils';
+import utils from '../../../../utils';
+import orderBy from 'lodash.orderby';
 
 export default function LineMap() {
     const circularLines = ['020', '021', '022', '023', '502', '602', '507', '508', '001', '002', '010', '011'];
@@ -34,7 +36,7 @@ export default function LineMap() {
         latitudeDelta: 0.4,
         longitudeDelta: 0.4,
     }
-    const tempCars = [];
+    let tempCars = [];
 
     let renderTimeout;
 
@@ -81,6 +83,7 @@ export default function LineMap() {
     }, []);
 
     function updateCarsState() {
+        tempCars = orderBy(tempCars, [c => c.operational.timeTable.split('-')[0]]);
         setCars(merge([], tempCars));
     }
 
@@ -150,7 +153,12 @@ export default function LineMap() {
                 <Text>{car.code}</Text>
                 <Text>Tipo: {carTypes[car.type]}</Text>
                 <Text>Tabela: {car.operational.timeTable} - {car.operational.timeTableStatus}</Text>
-                <Text>Atualizado em: {new Date(car.lastSeen).toLocaleTimeString([], { timeStyle: 'short' })}</Text>
+                <View style={{ flexDirection: 'row' }} >
+                    <Text>Atualizado em: {moment(car.lastSeen).format('HH:mm')}</Text>
+                    <TouchableOpacity style={styles.detailButton}>
+                        <FontAwesome5 name="info-circle" size={15} color="#2d3436" />
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }

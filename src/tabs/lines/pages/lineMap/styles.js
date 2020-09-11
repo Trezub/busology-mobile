@@ -16,19 +16,29 @@ export default StyleSheet.create({
     line: {
         flexDirection: 'row',
         textAlignVertical: 'center',
-        
+
         marginTop: 5,
         marginBottom: 10,
     },
     car: {
         padding: 20,
         borderRadius: 15,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+
+        elevation: 10,
     },
     carousel: {
         position: 'absolute',
         bottom: 0,
-        height: 120,
+        height: 140,
     },
     lineCode: {
         fontSize: 13,
@@ -47,5 +57,13 @@ export default StyleSheet.create({
     },
     property: {
         textTransform: 'capitalize'
+    },
+
+    detailButton: {
+        backgroundColor: '#fafafa',
+        paddingHorizontal: 8,
+        paddingVertical: 5,
+        borderRadius: 10,
+        marginLeft: 'auto'
     },
 });

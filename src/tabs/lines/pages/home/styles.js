@@ -38,6 +38,7 @@ export default StyleSheet.create({
     },
 
     searchBar: {
+        flexDirection: 'row',
         backgroundColor: '#fcfcfc',
         paddingVertical: 5,
         fontSize: 16,

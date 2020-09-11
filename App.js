@@ -1,8 +1,26 @@
 import React from 'react';
-import Router from './src/router';
+import LinesRouter from './src/tabs/lines/router';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function App() {
-  return (
-    <Router />
-  );
+    const Tab = createBottomTabNavigator();
+
+    const nullComponent = () => null;
+
+    return (
+        <NavigationContainer>
+            <Tab.Navigator tabBarOptions={{ activeTintColor: '#3c40c6', inactiveTintColor: 'gray' }}>
+                <Tab.Screen name='Lines' component={LinesRouter} options={{
+                    tabBarIcon: ({ focused }) => (<FontAwesome5 name="route" size={15} color={focused ? '#3c40c6' : 'gray'} />),
+                    title: 'Linhas',
+                }} />
+                <Tab.Screen name='Buses' component={nullComponent} options={{
+                    tabBarIcon: ({ focused }) => (<FontAwesome5 name="bus" size={15} color={focused ? '#3c40c6' : 'gray'} />),
+                    title: 'Ônibus',
+                }} />
+            </Tab.Navigator>
+        </NavigationContainer>
+    );
 }
