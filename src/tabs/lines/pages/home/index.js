@@ -129,6 +129,7 @@ export default function Home() {
                     placeholder='Pesquisar'
                     onChangeText={setSearchTerms}
                     value={searchTerms}
+                    style={{ flex: 1 }}
                 />
                 <TouchableOpacity
                     onPress={() => setSearchTerms('')}

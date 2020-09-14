@@ -11,7 +11,7 @@ export default StyleSheet.create({
     lineCode: {
         fontSize: 13,
         backgroundColor: '#eb7434',
-        width: 40,
+        width: 50,
         paddingVertical: 5,
         color: '#fff',
         textAlign: 'center',
@@ -23,11 +23,18 @@ export default StyleSheet.create({
         marginLeft: 10,
         textAlignVertical: 'center',
     },
-    list: {
-
+    header: {
+        flex: 1,
+        width: null,
+        textAlign: 'center',
+        borderRadius: 10,
+        marginVertical: 10,
+        marginHorizontal: 'auto',
+        padding: 5,
+        justifyContent: 'center',
+        backgroundColor: '#fff'
     },
     line: {
-        flex: 1,
         flexDirection: 'row',
         backgroundColor: '#fff',
         textAlignVertical: 'center',
@@ -42,9 +49,9 @@ export default StyleSheet.create({
         backgroundColor: '#fcfcfc',
         paddingVertical: 5,
         fontSize: 16,
+        marginBottom: 5,
         paddingHorizontal: 15,
         borderRadius: 10,
-        marginBottom: 15,
     },
 
     detailButton: {
