@@ -8,8 +8,6 @@ import { FontAwesome5 } from '@expo/vector-icons';
 export default function App() {
     const Tab = createBottomTabNavigator();
 
-    const nullComponent = () => null;
-
     return (
         <NavigationContainer>
             <Tab.Navigator tabBarOptions={{ activeTintColor: '#3c40c6', inactiveTintColor: 'gray' }}>

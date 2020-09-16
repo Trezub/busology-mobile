@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { TextInput, View, Text, TouchableOpacity, SectionList } from 'react-native';
+import { TextInput, View, Text, TouchableOpacity, SectionList, FlatList } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -33,10 +33,12 @@ import groupBy from 'lodash.groupby';
 export default function Home() {
     const [cars, setCars] = useState([]);
     const [sections, setSections] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [searchTerms, setSearchTerms] = useState('');
+    const [lines, setLines] = useState([]);
 
     const navigation = useNavigation();
+
+    let loading = false;
 
     let total = -1;
     let searchTimeout;
@@ -45,16 +47,15 @@ export default function Home() {
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
 
-    async function loadCars(code) {
+    async function loadCars() {
         if (loading) return;
-        if (cars.length === total) returm;
+        if (cars.length === total) return;
 
-        setLoading(true);
+        loading = true;
         try {
             const response = await api.get('/cars', {
-                cancelToken: source.token,
                 params: {
-                    skip: !!code && cars.length - carsFoundOnSearch,
+                    skip: cars.length - carsFoundOnSearch,
                 }
             });
             total = response.headers['x-bus-count'];
@@ -62,10 +63,10 @@ export default function Home() {
 
             setCars(newArray);
         } catch (err) {
-            if (axios.isCancel(err)) return console.log('cars request canceled');
+            loading = false;
             console.log(err);
         }
-        setLoading(false);
+        loading = false;
     }
 
     let carsReturnedOnSearch = 0;
@@ -74,12 +75,10 @@ export default function Home() {
         if (!code) {
             return;
         }
-        if (loading) {
-            source.cancel();
-        }
+        if (loading) return;
         if (totalSearch === carsReturnedOnSearch) return;
         try {
-            setLoading(true);
+            loading = true;
             const response = await api.get('/cars', {
                 cancelToken: source.token,
                 params: {
@@ -93,14 +92,32 @@ export default function Home() {
             carsFoundOnSearch += foundCars.length;
             const newArray = [...cars, ...foundCars];
             setCars(newArray);
-            setLoading(false);
+            loading = false;
         } catch (err) {
-            if (axios.isCancel(err)) return console.log('car search canceled');
+            loading = false;
+            if (axios.isCancel(err)) {
+                return console.log('car search canceled');
+            };
+            console.log(err);
+        }
+    }
+
+    async function loadLines() {
+        try {
+            const response = (await api.get('/static/lines')).data;
+            if (response) {
+                setLines(response);
+            } else {
+                console.log(`/static/lines returned ${response}`);
+            }
+        } catch (err) {
+            console.log(`Error getting lines: ${err}`);
         }
     }
 
     useEffect(() => {
         loadCars();
+        loadLines();
     }, []);
 
     function mapCarGroups() {
@@ -112,7 +129,7 @@ export default function Home() {
         const sections = [...Object.entries(groups)].map(([k, v]) => {
             return {
                 title: k,
-                data: v,
+                data: [v], // Nested lists
             }
         });
         setSections(sections);
@@ -122,7 +139,7 @@ export default function Home() {
 
 
     function navigateToDetail(car) {
-        navigation.navigate('carDetail', car);
+        navigation.navigate('CarDetail', { car });
     }
 
     function searchTermsChanged(text) {
@@ -130,6 +147,9 @@ export default function Home() {
             carsReturnedOnSearch = 0;
             totalSearch = -1;
             return;
+        }
+        if (loading) {
+            source.cancel();
         }
         searchCars(text);
     }
@@ -139,6 +159,14 @@ export default function Home() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => searchTermsChanged(text), 1000);
         console.log('timeout set');
+    }
+
+    function loadX() {
+        if (searchTerms === '') {
+            loadCars();
+        } else {
+            searchCars(searchTerms);
+        }
     }
 
     return (
@@ -160,11 +188,11 @@ export default function Home() {
             <SectionList
                 sections={sections}
                 showsVerticalScrollIndicator={true}
-                keyExtractor={car => car.code}
-                onEndReached={loadCars}
-                onEndReachedThreshold={1}
+                keyExtractor={list => list.title}
+                onEndReached={loadX}
+                onEndReachedThreshold={2}
                 stickySectionHeadersEnabled={true}
-                style={{ flex: 1 }}
+                style={{ flex: 1, }}
 
                 renderSectionHeader={({ section: { title } }) => {
                     return (
@@ -172,16 +200,53 @@ export default function Home() {
                     );
                 }}
 
-                renderItem={({ item: car }) => (
-                    <TouchableOpacity style={styles.line} onPress={() => navigateToDetail(car)}>
-                        <Text style={[styles.lineCode, utils.getLineColorStyle(car.color)]}>{car.code}</Text>
-                        <Text style={styles.lineName}>{owners[car.code[0]]}</Text>
-                        <View
-                            style={styles.detailButton}
-                        >
-                            <FontAwesome name="chevron-circle-right" size={15} color="#777" />
-                        </View>
-                    </TouchableOpacity>
+                renderItem={({ item: sectionCars }) => (
+                    <FlatList
+                        data={sectionCars}
+                        numColumns={2}
+                        keyExtractor={car => car.code}
+                        style={{ flex: 1 }}
+                        columnWrapperStyle={{ flex: 1, justifyContent: 'space-around' }}
+                        renderItem={({ item: car }) => {
+                            const line = lines.find(l => l.COD === car.lastSession.lineCode);
+                            const lineStyle = utils.getLineColorStyle(line && line.NOME_COR);
+                            const carStyle = utils.getLineColorStyle(car.color);
+                            const lineName = car.lastSession.lineCode === 'REC' ? 'Recolhe' : (line && line.NOME || 'Desconhecido');
+                            const stateText = car.lastSession.open ? (
+                                <View
+                                    style={{ alignSelf: 'center', marginVertical: 5, flexDirection: 'row' }}
+                                >
+                                    <FontAwesome name="feed" size={15} color="#0be881" style={{ marginRight: 5 }} />
+                                    <Text style={{ color: '#000' }}>Em operação:</Text>
+                                </View>
+                            ) : (
+                                    <Text
+                                        style={{ alignSelf: 'center', marginVertical: 5, color: '#333' }}
+                                    >
+                                        Visto por último em:
+                                    </Text>
+                                )
+                            return (
+                                <View style={styles.car}>
+                                    <TouchableOpacity onPress={() => navigateToDetail(car)}>
+                                        <Text style={[styles.carCode, (carStyle || lineStyle), { alignSelf: 'center' }]}>{car.code}</Text>
+                                        {stateText}
+                                        <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                                            <Text style={[styles.lineCode, (lineStyle || carStyle)]}>
+                                                {car.lastSession.lineCode}
+                                            </Text>
+                                            <Text style={styles.lineName}>
+                                                {lineName}
+                                            </Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }}
+
+                    >
+
+                    </FlatList>
                 )}
             />
         </View>

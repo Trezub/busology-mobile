@@ -10,7 +10,7 @@ export default StyleSheet.create({
     },
     lineCode: {
         fontSize: 13,
-        backgroundColor: '#eb7434',
+        backgroundColor: '#ed7900',
         width: 40,
         paddingVertical: 5,
         color: '#fff',

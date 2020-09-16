@@ -11,37 +11,52 @@ export default StyleSheet.create({
     lineCode: {
         fontSize: 13,
         backgroundColor: '#eb7434',
-        width: 50,
-        paddingVertical: 5,
+        paddingHorizontal: 5,
+        paddingVertical: 3,
+        minWidth: 35,
         color: '#fff',
         textAlign: 'center',
         textAlignVertical: 'center',
         borderRadius: 5
     },
     lineName: {
-        fontSize: 15,
-        marginLeft: 10,
+        fontSize: 12,
+        marginLeft: 8,
+        maxWidth: 100,
         textAlignVertical: 'center',
     },
+    carCode: {
+        width: 100,
+        height: 100,
+        borderRadius: 360,
+        backgroundColor: '#ed7900',
+        color: '#fff',
+        textAlignVertical: 'center',
+        textAlign: 'center',
+        fontSize: 14,
+    },
     header: {
-        flex: 1,
-        width: null,
         textAlign: 'center',
         borderRadius: 10,
         marginVertical: 10,
-        marginHorizontal: 'auto',
+        marginHorizontal: 100,
         padding: 5,
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    },
-    line: {
-        flexDirection: 'row',
         backgroundColor: '#fff',
-        textAlignVertical: 'center',
-        paddingVertical: 13,
-        paddingHorizontal: 10,
-        marginVertical: 5,
-        borderRadius: 10,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+
+        elevation: 5,
+    },
+    car: {
+        flexDirection: 'column',
+        marginBottom: 25,
+        width: 170,
     },
 
     searchBar: {

@@ -10,4 +10,5 @@ export default {
     'K': 'A.V Tamandaré',
     'L': 'Araucária T.C',
     'M': 'A.V Mercês',
+    'X': 'Veículo de testes'
 }
