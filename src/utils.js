@@ -15,6 +15,7 @@ export default {
             case 'AZUL':
                 return styles.blue;
             case 'PRATA':
+            case 'CINZA':
                 return styles.gray;
             case 'BRANCA':
                 return styles.white;

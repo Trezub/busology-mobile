@@ -1,40 +1,40 @@
 {
-  "expo": {
-    "name": "busology",
-    "slug": "busology",
-    "version": "0.0.1",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "config": {
-        "googleMapsApiKey": "AIzaSyBhiqB1O4rHqGro8a7eB5LnYPg5z6Eu6qg"
-      },
-      "supportsTablet": true,
-      "bundleIdentifier": "br.com.softiba.busology"
-    },
-    "android": {
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyBhiqB1O4rHqGro8a7eB5LnYPg5z6Eu6qg"
-        }
-      },
-      "package": "br.com.softiba.busology",
-      "versionCode": 1
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "sdkVersion": "38.0.0"
-  }
+    "expo": {
+        "name": "busology",
+        "slug": "busology",
+        "version": "0.0.1",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "updates": {
+            "fallbackToCacheTimeout": 0
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "config": {
+                "googleMapsApiKey": "AIzaSyBhiqB1O4rHqGro8a7eB5LnYPg5z6Eu6qg"
+            },
+            "supportsTablet": true,
+            "bundleIdentifier": "br.com.softiba.busology"
+        },
+        "android": {
+            "config": {
+                "googleMaps": {
+                    "apiKey": "AIzaSyBhiqB1O4rHqGro8a7eB5LnYPg5z6Eu6qg"
+                }
+            },
+            "package": "br.com.softiba.busology",
+            "versionCode": 1
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "sdkVersion": "38.0.0"
+    }
 }

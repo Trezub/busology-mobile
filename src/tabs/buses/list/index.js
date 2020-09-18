@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import { TextInput, View, Text, TouchableOpacity, SectionList, FlatList } from 'react-native';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useEffect, useRef } from 'react'
+import { TextInput, View, Text, TouchableOpacity, SectionList, FlatList, RefreshControlBase } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import owners from '../../../services/owners';
 import api from '../../../services/api';
 import styles from './styles';
-import utils from '../../../utils'
 import groupBy from 'lodash.groupby';
+import BusCircle from '../../../components/busCircle';
 
 // import {
 //     Placeholder,
@@ -32,69 +32,75 @@ import groupBy from 'lodash.groupby';
 
 export default function Home() {
     const [cars, setCars] = useState([]);
+    const [foundCars, setFoundCars] = useState([]);
     const [sections, setSections] = useState([]);
     const [searchTerms, setSearchTerms] = useState('');
     const [lines, setLines] = useState([]);
 
+    useEffect(() => {
+        loadCars();
+        loadLines();
+    }, []);
+    useEffect(mapCarGroups, [searchTerms, cars, foundCars]);
+
     const navigation = useNavigation();
+    function navigateToDetail(car) {
+        navigation.navigate('CarDetail', { car });
+    }
 
-    let loading = false;
 
-    let total = -1;
-    let searchTimeout;
-    let carsFoundOnSearch = 0;
-
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
+    const refs = useRef({
+        total: -1,
+        searchTimeout: null,
+        searchRequest: axios.CancelToken.source(),
+        loading: false,
+        totalSearch: -1,
+    }).current;
 
     async function loadCars() {
-        if (loading) return;
-        if (cars.length === total) return;
+        if (refs.loading) return;
+        if (cars.length === refs.total) return;
 
         loading = true;
         try {
             const response = await api.get('/cars', {
                 params: {
-                    skip: cars.length - carsFoundOnSearch,
+                    skip: cars.length,
                 }
             });
-            total = response.headers['x-bus-count'];
+            refs.total = response.headers['x-bus-count'];
             const newArray = [...cars, ...response.data.filter(c => !cars.some(c2 => c2.code === c.code))];
 
             setCars(newArray);
         } catch (err) {
-            loading = false;
+            refs.loading = false;
             console.log(err);
         }
         loading = false;
     }
 
-    let carsReturnedOnSearch = 0;
-    let totalSearch = -1;
     async function searchCars(code) {
         if (!code) {
             return;
         }
-        if (loading) return;
-        if (totalSearch === carsReturnedOnSearch) return;
+        if (refs.loading) return;
+        if (refs.totalSearch === foundCars.length) return;
         try {
-            loading = true;
+            refs.loading = true;
             const response = await api.get('/cars', {
-                cancelToken: source.token,
+                cancelToken: refs.searchRequest.token,
                 params: {
-                    code,
-                    skip: carsReturnedOnSearch,
+                    code: code.toUpperCase(),
+                    skip: foundCars.length,
                 }
             });
-            carsReturnedOnSearch += response.data.length;
-            totalSearch = response.headers['x-bus-count'];
-            const foundCars = response.data.filter(c => !cars.some(c2 => c2.code === c.code));
-            carsFoundOnSearch += foundCars.length;
-            const newArray = [...cars, ...foundCars];
-            setCars(newArray);
-            loading = false;
+
+            refs.totalSearch = response.headers['x-bus-count'];
+            const found = response.data.filter(c => !cars.some(c2 => c2.code === c.code));
+            setFoundCars([...foundCars, ...found]);
+            refs.loading = false;
         } catch (err) {
-            loading = false;
+            refs.loading = false;
             if (axios.isCancel(err)) {
                 return console.log('car search canceled');
             };
@@ -115,16 +121,11 @@ export default function Home() {
         }
     }
 
-    useEffect(() => {
-        loadCars();
-        loadLines();
-    }, []);
-
     function mapCarGroups() {
         if (cars.length === 0) {
             return;
         }
-        const filtered = cars.filter(c => c.code.includes(searchTerms));
+        const filtered = [...cars.filter(c => c.code.includes(searchTerms)), ...foundCars];
         const groups = groupBy(filtered, (car) => car.code[0]);
         const sections = [...Object.entries(groups)].map(([k, v]) => {
             return {
@@ -135,29 +136,22 @@ export default function Home() {
         setSections(sections);
     }
 
-    useEffect(mapCarGroups, [searchTerms, cars]);
-
-
-    function navigateToDetail(car) {
-        navigation.navigate('CarDetail', { car });
-    }
-
     function searchTermsChanged(text) {
+        refs.totalSearch = -1;
+        setFoundCars([]);
         if (text === '') {
-            carsReturnedOnSearch = 0;
-            totalSearch = -1;
             return;
         }
         if (loading) {
-            source.cancel();
+            refs.searchRequest.cancel();
         }
         searchCars(text);
     }
 
     function setSearchTimeout(text) {
         setSearchTerms(text);
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => searchTermsChanged(text), 1000);
+        clearTimeout(refs.searchTimeout);
+        refs.searchTimeout = setTimeout(() => searchTermsChanged(text), 300);
         console.log('timeout set');
     }
 
@@ -179,7 +173,10 @@ export default function Home() {
                     style={{ flex: 1 }}
                 />
                 <TouchableOpacity
-                    onPress={() => setSearchTerms('')}
+                    onPress={() => {
+                        setSearchTerms('');
+                        searchTermsChanged('');
+                    }}
                     style={{ marginLeft: 'auto', justifyContent: 'center', display: searchTerms !== '' ? 'flex' : 'none' }}
                 >
                     <MaterialIcons name="clear" size={15} color="#2d3436" />
@@ -205,44 +202,16 @@ export default function Home() {
                         data={sectionCars}
                         numColumns={2}
                         keyExtractor={car => car.code}
+                        viewabilityConfig={{ itemVisiblePercentThreshold: 100, minimumViewTime: 300 }}
                         style={{ flex: 1 }}
                         columnWrapperStyle={{ flex: 1, justifyContent: 'space-around' }}
-                        renderItem={({ item: car }) => {
-                            const line = lines.find(l => l.COD === car.lastSession.lineCode);
-                            const lineStyle = utils.getLineColorStyle(line && line.NOME_COR);
-                            const carStyle = utils.getLineColorStyle(car.color);
-                            const lineName = car.lastSession.lineCode === 'REC' ? 'Recolhe' : (line && line.NOME || 'Desconhecido');
-                            const stateText = car.lastSession.open ? (
-                                <View
-                                    style={{ alignSelf: 'center', marginVertical: 5, flexDirection: 'row' }}
-                                >
-                                    <FontAwesome name="feed" size={15} color="#0be881" style={{ marginRight: 5 }} />
-                                    <Text style={{ color: '#000' }}>Em operação:</Text>
-                                </View>
-                            ) : (
-                                    <Text
-                                        style={{ alignSelf: 'center', marginVertical: 5, color: '#333' }}
-                                    >
-                                        Visto por último em:
-                                    </Text>
-                                )
-                            return (
-                                <View style={styles.car}>
-                                    <TouchableOpacity onPress={() => navigateToDetail(car)}>
-                                        <Text style={[styles.carCode, (carStyle || lineStyle), { alignSelf: 'center' }]}>{car.code}</Text>
-                                        {stateText}
-                                        <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-                                            <Text style={[styles.lineCode, (lineStyle || carStyle)]}>
-                                                {car.lastSession.lineCode}
-                                            </Text>
-                                            <Text style={styles.lineName}>
-                                                {lineName}
-                                            </Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        }}
+                        renderItem={({ item: car }) => (
+                            <BusCircle
+                                line={lines.find(l => l.COD === car.lastSession.lineCode)}
+                                car={car}
+                                onPress={() => navigateToDetail(car)}
+                            />
+                        )}
 
                     >
 
