@@ -45,7 +45,7 @@ export default function Home() {
 
     const navigation = useNavigation();
     function navigateToDetail(car) {
-        navigation.navigate('CarDetail', { car });
+        navigation.navigate('CarDetail', { car, lines });
     }
 
 
@@ -205,13 +205,13 @@ export default function Home() {
                         viewabilityConfig={{ itemVisiblePercentThreshold: 100, minimumViewTime: 300 }}
                         style={{ flex: 1 }}
                         columnWrapperStyle={{ flex: 1, justifyContent: 'space-around' }}
-                        renderItem={({ item: car }) => (
+                        renderItem={({ item: car }) =>
                             <BusCircle
                                 line={lines.find(l => l.COD === car.lastSession.lineCode)}
                                 car={car}
                                 onPress={() => navigateToDetail(car)}
                             />
-                        )}
+                        }
 
                     >
 

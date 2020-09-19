@@ -5,17 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug in Exponent",
-            "cwd": "${workspaceFolder}",
-            "type": "reactnative",
-            "request": "launch",
-            "platform": "exponent"
-        },
-        {
             "name": "Attach to packager",
             "cwd": "${workspaceFolder}",
             "type": "reactnative",
             "request": "attach",
+            "skipFiles": [
+                "node_modules/**"
+            ]
         }
     ]
 }

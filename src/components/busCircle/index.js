@@ -75,14 +75,13 @@ export default function BusCircle({ car, line, onPress }) {
             style={{ alignSelf: 'center', marginVertical: 5, flexDirection: 'row', marginTop: 105 }}
         >
             <FontAwesome name="feed" size={15} color="#0be881" style={{ marginRight: 5, textAlignVertical: 'center' }} />
-            <Text style={{ color: '#000' }}>Em operação:</Text>
+            <Text style={{ color: '#000' }}>Em operação: </Text>
         </View>
     ) : (
             <Text
                 style={{ alignSelf: 'center', marginVertical: 5, color: '#333', marginTop: 105 }}
             >
-                Visto por último em:
-            </Text>
+                Visto por último em: </Text>
         )
     return (
         <View style={styles.car}>
@@ -108,8 +107,7 @@ export default function BusCircle({ car, line, onPress }) {
                         {car.lastSession.lineCode}
                     </Text>
                     <Text style={styles.lineName}>
-                        {lineName}
-                    </Text>
+                        {lineName} </Text>
                 </View>
             </TouchableOpacity>
         </View>
