@@ -26,6 +26,7 @@ export default function LineMap() {
     const lineStyle = utils.getLineColorStyle(line.NOME_COR);
 
     const [shapes, setShapes] = useState([]);
+    const [stops, setStops] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [activeTimeTables, setActiveTimeTables] = useState(route.params.activeTimeTables || 'Carregando...');
@@ -41,7 +42,8 @@ export default function LineMap() {
     let renderTimeout;
 
     useEffect(() => {
-        loadShapes()
+        loadShapes();
+        loadStops();
         socket = io(api.defaults.baseURL);
         socket.on('connect', () => {
             // console.log('socket connected');
@@ -136,6 +138,21 @@ export default function LineMap() {
             //// console.log(err);
         }
     }
+    async function loadStops() {
+        try {
+            const response = (await api.get('static/stops/' + line.COD)).data;
+            setStops(
+                orderBy(response.map(({ NUM, LAT, LON }) => {
+                    return {
+                        latitude: Number(LAT.replace(',', '.')),
+                        longitude: Number(LON.replace(',', '.')),
+                        code: NUM,
+                    }
+                }), 'number'));
+        } catch (err) {
+            //// console.log(err);
+        }
+    }
 
     const onMapRendered = () => {
         setMapLoaded(true);
@@ -191,6 +208,30 @@ export default function LineMap() {
                             />
                         )
                     })
+                }
+                { // Draw stops markers
+                    stops.map(({ latitude, longitude, code }, index) => (
+                        <Marker
+                            coordinate={{
+                                latitude,
+                                longitude,
+                            }}
+                            key={code}
+                        >
+                            <View style={{
+                                borderRadius: 50,
+                                backgroundColor: lineStyle.backgroundColor,
+                                borderColor: '#1e272e',
+                                borderWidth: 1,
+                                height: 13,
+                                width: 13,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }} >
+                                <MaterialCommunityIcons name="sign-direction" size={8} color="#fff" />
+                            </View>
+                        </Marker>
+                    ))
                 }
                 { // Draw car markers
                     cars.map((car, index) => (
