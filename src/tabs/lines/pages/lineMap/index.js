@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, Dimensions } from 'react-native';
-import MapView, { Polyline, Callout, Marker } from 'react-native-maps';
-import { useRoute, useNavigation } from '@react-navigation/native'
-import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import carTypes from '../../../../services/vehicleTypes';
-import Carousel from 'react-native-snap-carousel';
-import merge from 'lodash.merge';
-import moment from 'moment';
+import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import groupBy from 'lodash.groupby';
-import io from 'socket.io-client';
-import api from '../../../../services/api';
-import styles from './styles';
-import utils from '../../../../utils';
+import merge from 'lodash.merge';
 import orderBy from 'lodash.orderby';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker, Polyline } from 'react-native-maps';
+import Carousel from 'react-native-snap-carousel';
+import io from 'socket.io-client';
+import URLParse from 'url-parse';
+import api from '../../../../services/api';
+import carTypes from '../../../../services/vehicleTypes';
+import utils from '../../../../utils';
+import styles from './styles';
 
 export default function LineMap() {
     const circularLines = ['020', '021', '022', '023', '502', '602', '507', '508', '001', '002', '010', '011'];
@@ -44,7 +45,8 @@ export default function LineMap() {
     useEffect(() => {
         loadShapes();
         loadStops();
-        socket = io(api.defaults.baseURL);
+        const uri = URLParse(api.defaults.baseURL + ':8080');
+        socket = io(uri.toString());
         socket.on('connect', () => {
             // console.log('socket connected');
             socket.emit('sub', line.COD);
