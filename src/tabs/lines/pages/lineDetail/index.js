@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import { Ionicons, SimpleLineIcons, Fontisto } from "@expo/vector-icons";
+import { Fontisto, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import io from "socket.io-client";
 import merge from "lodash.merge";
-import carTypes from "../../../../services/vehicleTypes";
 import moment from "moment";
-import styles from "./styles";
-import utils from "../../../../utils";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import io from "socket.io-client";
+import URLParse from "url-parse";
 import api from "../../../../services/api";
+import carTypes from "../../../../services/vehicleTypes";
+import utils from "../../../../utils";
+import styles from "./styles";
 
 export default function LineDetail() {
     const navigation = useNavigation();
@@ -26,7 +27,8 @@ export default function LineDetail() {
     );
 
     useEffect(() => {
-        socket = io(api.defaults.baseURL);
+        const uri = URLParse(api.defaults.baseURL + ':8080');
+        socket = io(uri.toString());
         socket.on("connect", () => {
             //console.log('socket connected');
             socket.emit("sub", line.COD);

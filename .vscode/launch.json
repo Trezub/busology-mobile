@@ -9,9 +9,6 @@
             "cwd": "${workspaceFolder}",
             "type": "reactnative",
             "request": "attach",
-            "skipFiles": [
-                "node_modules/**"
-            ]
         }
     ]
 }
