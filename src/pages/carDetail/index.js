@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useRoute, useNavigation } from '@react-navigation/native'
 import { Feather, FontAwesome5, Fontisto, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
-
-
-
+import { useNavigation, useRoute } from '@react-navigation/native';
 import moment from 'moment';
 import 'moment/locale/pt-br';
-moment.locale('pt-br', {
+import React, { useEffect, useState } from 'react';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import Carousel from 'react-native-snap-carousel';
+import api from '../../services/api';
+import owners from '../../services/owners';
+import types from '../../services/vehicleTypes';
+import utils from '../../utils';
+import styles from './styles';
+
+
+
+moment.updateLocale('pt-br', {
     calendar: {
         lastDay: '[Ontem às] LT',
         sameDay: '[Hoje às] LT',
@@ -16,13 +23,6 @@ moment.locale('pt-br', {
     }
 });
 
-import styles from './styles';
-import utils from '../../../utils';
-import owners from '../../../services/owners';
-import types from '../../../services/vehicleTypes';
-import api from '../../../services/api';
-import Carousel from 'react-native-snap-carousel';
-import { FlatList } from 'react-native-gesture-handler';
 
 export default function CarDetail() {
     const route = useRoute();

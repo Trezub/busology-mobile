@@ -6,16 +6,17 @@ import React, { useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import io from "socket.io-client";
 import URLParse from "url-parse";
-import api from "../../../../services/api";
-import carTypes from "../../../../services/vehicleTypes";
-import utils from "../../../../utils";
+import api from "../../services/api";
+import carTypes from "../../services/vehicleTypes";
+import utils from "../../utils";
 import styles from "./styles";
 
 export default function LineDetail() {
     const navigation = useNavigation();
     const route = useRoute();
 
-    const line = route.params.line;
+    const { line, lines } = route.params;
+    
     let socket;
     let renderTimeout;
 
@@ -76,7 +77,7 @@ export default function LineDetail() {
     }, [cars]);
 
     function navigateToMap(car) {
-        navigation.navigate("lineMap", { line, activeTimeTables, car });
+        navigation.navigate("LineMap", { line, activeTimeTables, car, lines });
     }
 
     return (

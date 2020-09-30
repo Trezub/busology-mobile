@@ -1,9 +1,10 @@
-import styles from './styles'
+import styles from './styles';
 
 export default {
     getLineColorStyle(category) {
         if (typeof category !== 'string') return;
         switch (category.toUpperCase()) {
+            case 'MADRUGUEIRO':
             case 'LARANJA':
                 return styles.orange;
             case 'AMARELA':

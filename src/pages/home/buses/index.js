@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { TextInput, View, Text, TouchableOpacity, SectionList, FlatList, RefreshControlBase } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import owners from '../../../services/owners';
-import api from '../../../services/api';
-import styles from './styles';
 import groupBy from 'lodash.groupby';
+import React, { useEffect, useRef, useState } from 'react';
+import { FlatList, SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import BusCircle from '../../../components/busCircle';
+import api from '../../../services/api';
+import owners from '../../../services/owners';
+import styles from './styles';
 
 // import {
 //     Placeholder,

@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react'
-import { TextInput, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import api from '../../../../services/api';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import api from '../../../services/api';
+import utils from '../../../utils';
 import styles from './styles';
-import utils from '../../../../utils'
 
 // import {
 //     Placeholder,
@@ -27,7 +27,7 @@ import utils from '../../../../utils'
 //     }),
 // });
 
-export default function Home() {
+export default function Lines() {
     const [lines, setLines] = useState([]);
     const [filteredLines, setFilteredLines] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -119,7 +119,7 @@ export default function Home() {
 
 
     function navigateToDetail(line) {
-        navigation.navigate('LineDetail', { line });
+        navigation.navigate('LineDetail', { line, lines });
     }
 
     return (

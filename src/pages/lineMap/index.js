@@ -10,9 +10,9 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import Carousel from 'react-native-snap-carousel';
 import io from 'socket.io-client';
 import URLParse from 'url-parse';
-import api from '../../../../services/api';
-import carTypes from '../../../../services/vehicleTypes';
-import utils from '../../../../utils';
+import api from '../../services/api';
+import carTypes from '../../services/vehicleTypes';
+import utils from '../../utils';
 import styles from './styles';
 
 export default function LineMap() {
@@ -21,7 +21,7 @@ export default function LineMap() {
     const route = useRoute();
     const navigation = useNavigation();
 
-    const { line, car } = route.params;
+    const { line, car, lines } = route.params;
     line.isCircular = circularLines.includes(line.COD) ? true : false;
 
     const lineStyle = utils.getLineColorStyle(line.NOME_COR);
@@ -38,13 +38,14 @@ export default function LineMap() {
         latitudeDelta: 0.4,
         longitudeDelta: 0.4,
     }
+    
     let tempCars = [];
 
     let renderTimeout;
 
     useEffect(() => {
         loadShapes();
-        loadStops();
+        //loadStops();
         const uri = URLParse(api.defaults.baseURL + ':8080');
         socket = io(uri.toString());
         socket.on('connect', () => {
@@ -144,15 +145,16 @@ export default function LineMap() {
         try {
             const response = (await api.get('static/stops/' + line.COD)).data;
             setStops(
-                orderBy(response.map(({ NUM, LAT, LON }) => {
+                orderBy(response.map(({ NUM, LAT, LON, ITINERARY_ID }) => {
                     return {
                         latitude: Number(LAT.replace(',', '.')),
                         longitude: Number(LON.replace(',', '.')),
                         code: NUM,
+                        itineraryId: ITINERARY_ID,
                     }
                 }), 'number'));
         } catch (err) {
-            //// console.log(err);
+            console.log(err);
         }
     }
 
@@ -174,7 +176,10 @@ export default function LineMap() {
                 <Text>Tabela: {car.operational.timeTable} - {car.operational.timeTableStatus}</Text>
                 <View style={{ flexDirection: 'row' }} >
                     <Text>Atualizado em: {moment(car.lastSeen).format('HH:mm')}</Text>
-                    <TouchableOpacity style={styles.detailButton}>
+                    <TouchableOpacity
+                        style={styles.detailButton}
+                        onPress={() => navigation.navigate('CarDetail', {car, lines})}
+                    >
                         <FontAwesome5 name="info-circle" size={15} color="#2d3436" />
                     </TouchableOpacity>
                 </View>
@@ -212,13 +217,14 @@ export default function LineMap() {
                     })
                 }
                 { // Draw stops markers
-                    stops.map(({ latitude, longitude, code }, index) => (
+                    stops.map(({ latitude, longitude, code, itineraryId }, index) => (
                         <Marker
+                            icon
                             coordinate={{
                                 latitude,
                                 longitude,
                             }}
-                            key={code}
+                            key={code + itineraryId}
                         >
                             <View style={{
                                 borderRadius: 50,
