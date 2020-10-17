@@ -100,11 +100,11 @@ export default function Lines() {
 
         setLoading(true);
         try {
-            const response = await api.get('/static/lines');
+            const response = await api.get('/lines');
             setLines(response.data);
             setFilteredLines(response.data);
         } catch (err) {
-            (err);
+            console.log(err);
         }
         setLoading(false);
     }

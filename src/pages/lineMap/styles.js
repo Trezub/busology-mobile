@@ -37,8 +37,7 @@ export default StyleSheet.create({
     },
     carousel: {
         position: 'absolute',
-        bottom: 0,
-        height: 140,
+        bottom: 25,
     },
     lineCode: {
         fontSize: 13,

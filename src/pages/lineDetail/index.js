@@ -28,8 +28,7 @@ export default function LineDetail() {
     );
 
     useEffect(() => {
-        const uri = URLParse(api.defaults.baseURL + ':8080');
-        socket = io(uri.toString());
+        socket = io(api.defaults.baseURL);
         socket.on("connect", () => {
             //console.log('socket connected');
             socket.emit("sub", line.COD);

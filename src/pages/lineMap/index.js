@@ -45,9 +45,8 @@ export default function LineMap() {
 
     useEffect(() => {
         loadShapes();
-        //loadStops();
-        const uri = URLParse(api.defaults.baseURL + ':8080');
-        socket = io(uri.toString());
+        loadStops();
+        socket = io(api.defaults.baseURL);
         socket.on('connect', () => {
             // console.log('socket connected');
             socket.emit('sub', line.COD);
@@ -125,7 +124,7 @@ export default function LineMap() {
 
     async function loadShapes() {
         try {
-            const response = (await api.get('static/route/' + line.COD)).data;
+            const response = (await api.get(`/line/${line.COD}/shapes`)).data;
             setShapes(
                 Object.values(
                     groupBy(
@@ -145,12 +144,13 @@ export default function LineMap() {
         try {
             const response = (await api.get('static/stops/' + line.COD)).data;
             setStops(
-                orderBy(response.map(({ NUM, LAT, LON, ITINERARY_ID }) => {
+                orderBy(response.map(({ NUM, LAT, LON, ITINERARY_ID, NOME }) => {
                     return {
                         latitude: Number(LAT.replace(',', '.')),
                         longitude: Number(LON.replace(',', '.')),
                         code: NUM,
                         itineraryId: ITINERARY_ID,
+                        name: NOME
                     }
                 }), 'number'));
         } catch (err) {
@@ -169,11 +169,13 @@ export default function LineMap() {
     }
 
     function renderCarouselItem({ item: car }) {
+        const nextDepartureStop = stops.find(s => s.code === car.operational.nextDepartureStop);
         return (
             <View style={styles.car}>
                 <Text>{car.code}</Text>
                 <Text>Tipo: {carTypes[car.type]}</Text>
                 <Text>Tabela: {car.operational.timeTable} - {car.operational.timeTableStatus}</Text>
+                {car.operational.nextDepartureAt != null ? (<Text>Próxima partida: {moment(car.operational.nextDepartureAt).format('HH:mm')} - {nextDepartureStop !== null ? nextDepartureStop.name.split(' - ')[0] : 'Ponto desconhecido'}</Text>): null}
                 <View style={{ flexDirection: 'row' }} >
                     <Text>Atualizado em: {moment(car.lastSeen).format('HH:mm')}</Text>
                     <TouchableOpacity
@@ -216,7 +218,7 @@ export default function LineMap() {
                         )
                     })
                 }
-                { // Draw stops markers
+                {/* { // Draw stops markers
                     stops.map(({ latitude, longitude, code, itineraryId }, index) => (
                         <Marker
                             icon
@@ -240,7 +242,7 @@ export default function LineMap() {
                             </View>
                         </Marker>
                     ))
-                }
+                } */}
                 { // Draw car markers
                     cars.map((car, index) => (
                         <Marker

@@ -110,7 +110,7 @@ export default function Home() {
 
     async function loadLines() {
         try {
-            const response = (await api.get('/static/lines')).data;
+            const response = (await api.get('/lines')).data;
             if (response) {
                 setLines(response);
             } else {
